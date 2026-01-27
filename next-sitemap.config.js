@@ -31,11 +31,6 @@ const sitemapConfig = {
             hrefIsAbsolute: true,
           },
           {
-            href: `${siteUrl}/ja${normalizedBasePath}` || `${siteUrl}/ja`,
-            hreflang: 'ja',
-            hrefIsAbsolute: true,
-          },
-          {
             href: `${siteUrl}/en${normalizedBasePath}` || `${siteUrl}/en`,
             hreflang: 'x-default',
             hrefIsAbsolute: true,
@@ -429,8 +424,7 @@ const sitemapConfig = {
     '/api/*',
     '/_next/*',
     '/*/train/*', // Exclude dynamic training pages
-    '/es/*', // Exclude es/ja locales - we only generate /en/* URLs
-    '/ja/*', // and add alternateRefs for other locales
+    '/es/*', // Exclude es locale - we only generate /en/* URLs
   ],
   robotsTxtOptions: {
     policies: [
@@ -484,7 +478,7 @@ const sitemapConfig = {
     };
 
     // Extract base path without locale (e.g., /en/kana -> /kana)
-    const localePattern = /^\/(en|es|ja)(\/.*)?$/;
+    const localePattern = /^\/(en|es)(\/.*)?$/;
     const match = path.match(localePattern);
     const basePath = match ? match[2] || '/' : path;
 
@@ -524,11 +518,6 @@ const sitemapConfig = {
         {
           href: `${siteUrl}/es${basePath}`,
           hreflang: 'es',
-          hrefIsAbsolute: true,
-        },
-        {
-          href: `${siteUrl}/ja${basePath}`,
-          hreflang: 'ja',
           hrefIsAbsolute: true,
         },
         {

@@ -65,11 +65,10 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
     },
     alternates: {
-      canonical: `${BASE_URL}/en/tools/anki-converter`,
+      canonical: `${BASE_URL}/tools/anki-converter`,
       languages: {
         en: `${BASE_URL}/en/tools/anki-converter`,
         es: `${BASE_URL}/es/tools/anki-converter`,
-        ja: `${BASE_URL}/ja/tools/anki-converter`,
       },
     },
     robots: {
@@ -186,7 +185,7 @@ const webApplicationSchema = {
     name: 'KanaDojo',
   },
   isAccessibleForFree: true,
-  inLanguage: ['en', 'es', 'ja'],
+  inLanguage: ['en', 'es'],
 };
 
 // SoftwareApplication schema for additional SEO

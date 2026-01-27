@@ -182,9 +182,9 @@ export default function ThemesModal({ open, onOpenChange }: ThemesModalProps) {
                     <div className='flex items-center gap-2 text-lg font-medium text-(--main-color)'>
                       <Icon size={20} />
                       {group.name}
-                      <span className='text-sm font-normal text-(--secondary-color)'>
+                      {/* <span className='text-sm font-normal text-(--secondary-color)'>
                         ({group.themes.length})
-                      </span>
+                      </span> */}
                     </div>
                     <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4'>
                       {group.themes.map(theme => (

@@ -392,9 +392,9 @@ const WelcomeModal = () => {
                   <div className='flex items-center gap-2 text-lg font-medium text-[var(--main-color)]'>
                     <themeSet.icon size={20} />
                     {themeSet.name}
-                    <span className='text-sm font-normal text-[var(--secondary-color)]'>
+                    {/* <span className='text-sm font-normal text-[var(--secondary-color)]'>
                       ({themeSet.themes.length})
-                    </span>
+                    </span> */}
                   </div>
                   <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4'>
                     {themeSet.themes.map(theme => {
