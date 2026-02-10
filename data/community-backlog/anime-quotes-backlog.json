@@ -419,7 +419,8 @@
     "romaji": "Boku wa mou nigenai!",
     "english": "I won't run away anymore!",
     "anime": "Hunter x Hunter",
-    "character": "Gon Freecss"
+    "character": "Gon Freecss",
+    "completed": true
   },
   {
     "id": 48,
@@ -427,7 +428,8 @@
     "romaji": "Nigeccha dame da!",
     "english": "I mustn't run away!",
     "anime": "Neon Genesis Evangelion",
-    "character": "Shinji Ikari"
+    "character": "Shinji Ikari",
+    "issued": true
   },
   {
     "id": 49,
