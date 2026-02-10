@@ -17,6 +17,7 @@ import { Dice5 } from 'lucide-react';
 import { Random } from 'random-js';
 import { useCustomThemeStore } from '@/features/Preferences/store/useCustomThemeStore';
 import CollapsibleSection from './CollapsibleSection';
+import CustomWallpaperUpload from './CustomWallpaperUpload';
 
 const random = new Random();
 
@@ -327,6 +328,11 @@ const Themes = () => {
               </label>
             ))}
           </fieldset>
+
+          {/* Custom wallpaper themes — only inside the Premium group */}
+          {themeSet.name === 'Premium (experimental, unstable)' && (
+            <CustomWallpaperUpload />
+          )}
         </CollapsibleSection>
       ))}
 

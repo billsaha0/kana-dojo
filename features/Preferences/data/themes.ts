@@ -6,7 +6,12 @@
  * All color math lives in ./themeColors.ts.
  */
 import { useCustomThemeStore } from '../store/useCustomThemeStore';
-import { getWallpaperById } from './wallpapers';
+import { useCustomWallpaperStore } from '../store/useCustomWallpaperStore';
+import {
+  getWallpaperById,
+  registerCustomWallpaper,
+  unregisterCustomWallpaper,
+} from './wallpapers';
 import usePreferencesStore from '../store/usePreferencesStore';
 import { LucideIcon } from 'lucide-react';
 import baseThemeSets from './themeDefinitions';
@@ -125,6 +130,10 @@ export function getThemeDefaultWallpaperId(
   themeId: string,
 ): string | undefined {
   const resolvedId = resolveThemeId(themeId);
+
+  // Custom wallpaper themes use their own ID as the wallpaper ID
+  if (resolvedId.startsWith('custom-')) return resolvedId;
+
   for (const group of baseThemeSets) {
     const theme = group.themes.find(t => t.id === resolvedId);
     if (theme?.wallpaperId) return theme.wallpaperId;
@@ -181,8 +190,15 @@ const premiumThemeIds = new Set(
     ?.themes.map(theme => theme.id) ?? [],
 );
 
-export const isPremiumThemeId = (themeId: string): boolean =>
-  premiumThemeIds.has(resolveThemeId(themeId));
+/**
+ * Check if a theme uses premium (glass) styling.
+ * Built-in premium themes are in the static set; custom wallpaper themes
+ * are identified by the `custom-` prefix.
+ */
+export const isPremiumThemeId = (themeId: string): boolean => {
+  const resolved = resolveThemeId(themeId);
+  return premiumThemeIds.has(resolved) || resolved.startsWith('custom-');
+};
 
 // ============================================================================
 // Built theme sets (default export)
@@ -233,23 +249,81 @@ function buildThemeFromTemplate(template: {
 // Populate map with custom themes from store (lazy)
 let _customThemesLoaded = false;
 
+/**
+ * Build a Theme object for a custom wallpaper (uses glass overlay colors).
+ */
+function buildCustomWallpaperTheme(id: string): Theme {
+  const base = {
+    id,
+    backgroundColor: 'oklch(0% 0 0 / 0.95)',
+    cardColor: 'oklch(0% 0 0 / 0.95)',
+    borderColor: 'oklch(0% 0 0 / 0.95)',
+    mainColor: 'oklch(100% 0 0)',
+    secondaryColor: 'oklch(85% 0 0)',
+  };
+  return buildThemeFromTemplate(base);
+}
+
+/**
+ * Sync all custom wallpapers into the wallpaper registry and theme map.
+ */
+function syncCustomWallpapers(): void {
+  const themeMap = getThemeMap();
+  const { wallpapers, objectUrls } = useCustomWallpaperStore.getState();
+
+  // Collect current custom IDs so we can detect removals
+  const currentCustomIds = new Set(wallpapers.map(w => w.id));
+
+  // Remove stale entries from previous sync
+  for (const key of themeMap.keys()) {
+    if (key.startsWith('custom-') && !currentCustomIds.has(key)) {
+      themeMap.delete(key);
+      unregisterCustomWallpaper(key);
+    }
+  }
+
+  // Register each current custom wallpaper
+  for (const wp of wallpapers) {
+    // Register in the wallpaper lookup registry
+    const url = objectUrls[wp.id] || wp.thumbnailDataUrl;
+    registerCustomWallpaper({
+      id: wp.id,
+      name: wp.name,
+      url, // Object URL (full-size) or thumbnail fallback
+      urlWebp: '', // Not needed — url is already WebP
+    });
+
+    // Register in the theme map
+    themeMap.set(wp.id, buildCustomWallpaperTheme(wp.id));
+  }
+}
+
 function ensureCustomThemesLoaded(): void {
   if (_customThemesLoaded) return;
   _customThemesLoaded = true;
 
   const themeMap = getThemeMap();
+
+  // --- Custom color themes (from useCustomThemeStore) ---
   useCustomThemeStore
     .getState()
     .themes.forEach(theme =>
       themeMap.set(theme.id, buildThemeFromTemplate(theme)),
     );
 
-  // Subscribe to store updates
   useCustomThemeStore.subscribe(state => {
     state.themes.forEach(theme =>
       themeMap.set(theme.id, buildThemeFromTemplate(theme)),
     );
-    // Clear cache to force rebuild of theme map next time it's accessed
+    _themeMap = null;
+  });
+
+  // --- Custom wallpaper themes (from useCustomWallpaperStore) ---
+  syncCustomWallpapers();
+
+  useCustomWallpaperStore.subscribe(() => {
+    syncCustomWallpapers();
+    // Clear cache so next lookup rebuilds
     _themeMap = null;
   });
 }

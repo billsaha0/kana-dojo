@@ -201,10 +201,7 @@ const WelcomeModal = () => {
               </div>
 
               <div className='flex items-center gap-3 rounded-lg bg-(--background-color) p-3'>
-                <Type
-                  className='flex-shrink-0 text-(--main-color)'
-                  size={24}
-                />
+                <Type className='flex-shrink-0 text-(--main-color)' size={24} />
                 <div>
                   <h3 className='font-semibold text-(--main-color)'>
                     {t('features.font.title')}
